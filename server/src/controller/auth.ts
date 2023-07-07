@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcrypt';
 import { User } from '../model/user';
-import { hashPassword, validateSpecialCharacter } from '../utils';
+import { hashPassword, validateSpecialCharacter, verifyPassword } from '../utils';
+import { JWT_SECRET } from '../constants';
+import jwt from 'jsonwebtoken';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -29,9 +30,41 @@ export const register = async (req: Request, res: Response) => {
     const result = await user.save();
     console.log(result);
 
-    return res.status(201).json({ message: 'User created successfully' });
+    return res.status(201).json({ message: 'Registration successful' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: 'Something went wrong, internal server error' });
+    return res.status(500).json({ message: 'Something went wrong, internal server error' });
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  try {
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+    if (!password) return res.status(400).json({ message: 'Password is required' });
+
+    const user = await User.findOne({ email }).exec();
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isPasswordMatch = await verifyPassword(password, user.password);
+    if (!isPasswordMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '3m' });
+    res.cookie('token', token, { httpOnly: true });
+
+    return res.status(200).json({ message: 'User logged in successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Something went wrong, internal server error' });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie('token');
+    return res.status(200).json({ message: 'User logged out successfully' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Something went wrong, internal server error' });
   }
 };

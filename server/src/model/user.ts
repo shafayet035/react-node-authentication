@@ -1,6 +1,12 @@
-import mongoose from 'mongoose';
+import { Document, Schema, model } from 'mongoose';
 
-const userSchema = new mongoose.Schema({
+export interface User extends Document {
+  name: string;
+  email: string;
+  password: string;
+}
+
+const userSchema = new Schema<User>({
   name: {
     type: String,
     required: true,
@@ -9,20 +15,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    minLength: 5,
-    maxLength: 255,
   },
   password: {
     type: String,
     required: true,
-    minLength: 6,
-    validate: {
-      validator: function (value) {
-        return /[!@#$%^&*(),.?":{}|<>]/.test(value);
-      },
-      message: 'Password must contain at least one special character',
-    },
   },
 });
 
-export const User = mongoose.model('User', userSchema);
+export const User = model<User>('User', userSchema);

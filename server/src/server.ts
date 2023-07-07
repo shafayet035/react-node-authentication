@@ -13,7 +13,7 @@ config({ path: path.resolve(__dirname, '../.env') });
 import { MONGO_DB_URI, PORT } from './constants';
 
 // express app
-const app = express();
+export const app = express();
 
 // app middlewares
 app.use(cors());
@@ -35,11 +35,11 @@ mongoose
   });
 
 readdirSync('src/routes').map((route) => {
-  app.use('/v1/api', require(`./routes/${route}`));
+  app.use('/api', require(`./routes/${route}`));
 });
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.status(201);
 });
 
 app.listen(PORT, () => {

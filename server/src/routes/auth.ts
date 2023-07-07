@@ -1,10 +1,10 @@
 import epxress from 'express';
-import { register } from '../controller/auth';
+import { register, login } from '../controller/auth';
 const router = epxress.Router();
 
 router.post('/register', register);
 
-router.post('/login', (req, res) => {});
+router.post('/login', login);
 
 router.post('/logout', (req, res) => {});
 
