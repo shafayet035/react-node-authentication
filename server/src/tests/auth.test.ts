@@ -25,6 +25,17 @@ describe('Authentication API', () => {
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('Registration successful');
   });
+
+  it('Should fail registration if information is invalid', async () => {
+    const response = await request(app).post('/api/register').send({
+      name: 'Shafayet Hossain',
+      email: 'testemail',
+      password: 'password',
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('Password must contain at least one special character e.g !@#$%^&*()');
+  });
 });
 
 /* Closing database connection after each test. */
