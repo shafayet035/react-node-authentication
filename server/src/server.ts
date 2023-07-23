@@ -12,7 +12,6 @@ config({ path: path.resolve(__dirname, '../.env') });
 
 import { MONGO_DB_URI, PORT } from './constants';
 
-// express app
 export const app = express();
 
 // app middlewares

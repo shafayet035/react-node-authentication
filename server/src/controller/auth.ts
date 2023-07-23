@@ -3,6 +3,8 @@ import { User } from '../model/user';
 import { hashPassword, validateSpecialCharacter, verifyPassword } from '../utils';
 import { JWT_SECRET } from '../constants';
 import jwt from 'jsonwebtoken';
+import randomstring from 'randomstring';
+import { sendPasswordResetEmail } from '../emails/auth';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -65,6 +67,25 @@ export const logout = async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'User logged out successfully' });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ message: 'Something went wrong, internal server error' });
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const email = req.body.email;
+
+  const code = randomstring.generate(5);
+
+  try {
+    const user = await User.findOneAndUpdate({ email }, { passwordResetCode: code }).exec();
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // send email
+    await sendPasswordResetEmail(email, code);
+
+    return res.status(200).json({ message: 'Password reset code sent to your email' });
+  } catch (error) {
     return res.status(500).json({ message: 'Something went wrong, internal server error' });
   }
 };
