@@ -7,8 +7,8 @@ This is a full-stack web application that provides user authentication functiona
 - TypeScript
 - MongoDB (mongoose)
 - Express
-- JWT (jsonwebtoken)
 - AWS SES
+- JWT (jsonwebtoken)
 - React
 - Axios
 
