@@ -16,7 +16,8 @@ export const register = async (req: Request, res: Response) => {
     if (password.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters long' });
     }
-    if (!validateSpecialCharacter(password)) return res.status(400).json({ message: 'Password must contain at least one special character e.g !@#$%^&*()' });
+    if (!validateSpecialCharacter(password))
+      return res.status(400).json({ message: 'Password must contain at least one special character e.g !@#$%^&*()' });
 
     const isUserExist = await User.findOne({ email }).exec();
     if (isUserExist) return res.status(409).send('Email is already is in use');

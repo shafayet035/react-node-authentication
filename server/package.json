@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "react-node-authentication-backend",
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
@@ -23,6 +23,7 @@
     "randomstring": "^1.3.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",

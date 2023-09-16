@@ -1,7 +1,7 @@
 # Server
 
-[ ] Setup Database
-[ ] Registration
-[ ] Login
+[x] Setup Database
+[x] Registration
+[x] Login
 [ ] Forget Password
 [ ] reset password
