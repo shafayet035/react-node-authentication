@@ -4,10 +4,13 @@ This is a full-stack web application that provides user authentication functiona
 
 ### Tech/Package using:
 
-- TypeScript : For Type safety
-- MongoDB (mongoose) : For Databse
-- Express : For Server
-- JWT (jsonwebtoken) : For authentication token
+- TypeScript
+- MongoDB (mongoose)
+- Express
+- JWT (jsonwebtoken)
+- AWS SES
+- React
+- Axios
 
 ### Try out in your local machine
 
