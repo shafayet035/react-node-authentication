@@ -35,10 +35,14 @@ if (MONGO_DB_URI) {
     });
 }
 
-readdirSync('./routes').map((route) => {
+const routesDir = path.join(__dirname, 'routes');
+
+console.log(routesDir);
+
+readdirSync(routesDir).map((route) => {
   const subRoute = path.parse(route).name;
 
-  app.use(`/api/${subRoute}`, require(`./routes/${route}`));
+  app.use(`/api/${subRoute}`, require(`${routesDir}/${route}`));
 });
 
 app.get('/', (req, res) => {
