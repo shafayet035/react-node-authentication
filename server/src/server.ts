@@ -35,7 +35,7 @@ if (MONGO_DB_URI) {
     });
 }
 
-readdirSync('src/routes').map((route) => {
+readdirSync('./routes').map((route) => {
   const subRoute = path.parse(route).name;
 
   app.use(`/api/${subRoute}`, require(`./routes/${route}`));
