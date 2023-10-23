@@ -1,14 +1,15 @@
-import aws from 'aws-sdk';
 import { AWS_EMAIL_FROM } from '../constants';
+import { SendEmailCommand } from '@aws-sdk/client-ses';
+import { SendEmail } from '.';
 
-const SES = new aws.SES({
-  region: 'us-east-1',
-});
-
-export const sendPasswordResetEmail = async (email: string, passwordResetCode: string) => {
+export const sendPasswordResetEmail = async (
+  email: string,
+  passwordResetCode: string,
+) => {
   if (!AWS_EMAIL_FROM) return;
 
   const params = {
+    Source: AWS_EMAIL_FROM,
     Destination: {
       ToAddresses: [email],
     },
@@ -22,13 +23,16 @@ export const sendPasswordResetEmail = async (email: string, passwordResetCode: s
         Data: 'Password Reset Code',
       },
     },
-    Source: AWS_EMAIL_FROM,
   };
-  SES.sendEmail(params, (err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('Email Sent Succesfully \n', data);
-    }
-  });
+
+  const command = new SendEmailCommand(params);
+
+  try {
+    const response = await SendEmail.send(command);
+    console.log(response);
+    return response;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };

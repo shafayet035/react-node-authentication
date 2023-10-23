@@ -21,24 +21,29 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 
 // Databse Connection
-mongoose
-  .connect(MONGO_DB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => {
-    console.log('Failed to connect to MongoDB', err);
-  });
+if (MONGO_DB_URI) {
+  mongoose
+    .connect(MONGO_DB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    } as ConnectOptions)
+    .then(() => {
+      console.log('Connected to MongoDB');
+    })
+    .catch((err) => {
+      console.log('Failed to connect to MongoDB', err);
+    });
+}
 
 readdirSync('src/routes').map((route) => {
-  app.use('/api', require(`./routes/${route}`));
+  const subRoute = path.parse(route).name;
+
+  app.use(`/api/${subRoute}`, require(`./routes/${route}`));
 });
 
 app.get('/', (req, res) => {
   res.status(201);
+  res.send('If there is no Hello World then its a good codebase :)');
 });
 
 app.listen(PORT, () => {

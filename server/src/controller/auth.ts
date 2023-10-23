@@ -1,23 +1,28 @@
 import { Request, Response } from 'express';
 import { User } from '../model/user';
-import { hashPassword, validateSpecialCharacter, verifyPassword } from '../utils';
-import { JWT_SECRET } from '../constants';
+import {
+  hashPassword,
+  validateSpecialCharacter,
+  verifyPassword,
+} from '../utils';
+import { JWT_EXPIRES_IN, JWT_SECRET } from '../constants';
 import jwt from 'jsonwebtoken';
 import randomstring from 'randomstring';
 import { sendPasswordResetEmail } from '../emails/auth';
+import { registerSchema, resetPasswordSchema } from '../Schema/Auth';
+import { z } from 'zod';
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
-    if (!name) return res.status(400).json({ message: 'Name is required' });
-    if (!email) return res.status(400).json({ message: 'Email is required' });
-    if (!password) return res.status(400).json({ message: 'Password is required' });
-    if (password.length < 6) {
-      return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+    try {
+      registerSchema.parse({ name, email, password });
+    } catch (error) {
+      const err = error as z.ZodError;
+
+      return res.status(405).send({ message: err.errors[0].message });
     }
-    if (!validateSpecialCharacter(password))
-      return res.status(400).json({ message: 'Password must contain at least one special character e.g !@#$%^&*()' });
 
     const isUserExist = await User.findOne({ email }).exec();
     if (isUserExist) return res.status(409).send('Email is already is in use');
@@ -36,7 +41,9 @@ export const register = async (req: Request, res: Response) => {
     return res.status(201).json({ message: 'Registration successful' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: 'Something went wrong, internal server error' });
+    return res
+      .status(500)
+      .json({ message: 'Something went wrong, internal server error' });
   }
 };
 
@@ -44,21 +51,27 @@ export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
     if (!email) return res.status(400).json({ message: 'Email is required' });
-    if (!password) return res.status(400).json({ message: 'Password is required' });
+    if (!password)
+      return res.status(400).json({ message: 'Password is required' });
 
     const user = await User.findOne({ email }).exec();
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const isPasswordMatch = await verifyPassword(password, user.password);
-    if (!isPasswordMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isPasswordMatch)
+      return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '3m' });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRES_IN,
+    });
     res.cookie('token', token, { httpOnly: true });
 
     return res.status(200).json({ message: 'User logged in successfully' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: 'Something went wrong, internal server error' });
+    return res
+      .status(500)
+      .json({ message: 'Something went wrong, internal server error' });
   }
 };
 
@@ -68,7 +81,9 @@ export const logout = async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'User logged out successfully' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ message: 'Something went wrong, internal server error' });
+    return res
+      .status(500)
+      .json({ message: 'Something went wrong, internal server error' });
   }
 };
 
@@ -78,15 +93,59 @@ export const forgotPassword = async (req: Request, res: Response) => {
   const code = randomstring.generate(5);
 
   try {
-    const user = await User.findOneAndUpdate({ email }, { passwordResetCode: code }).exec();
+    const user = await User.findOneAndUpdate(
+      { email },
+      { passwordResetCode: code },
+    ).exec();
 
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     // send email
     await sendPasswordResetEmail(email, code);
 
-    return res.status(200).json({ message: 'Password reset code sent to your email' });
+    return res
+      .status(200)
+      .json({ message: 'Password reset code sent to your email' });
   } catch (error) {
-    return res.status(500).json({ message: 'Something went wrong, internal server error' });
+    console.log(error);
+
+    return res
+      .status(500)
+      .json({ message: 'Something went wrong, internal server error' });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { email, password, code } = req.body;
+
+  try {
+    const user = await User.findOne({ email }).exec();
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (user.passwordResetCode !== code)
+      return res.status(400).json({ message: 'Invalid code' });
+
+    try {
+      resetPasswordSchema.parse({ email, password });
+    } catch (error) {
+      const err = error as z.ZodError;
+      return res.status(405).json({ message: err.errors[0] });
+    }
+
+    const newHashedPassword = await hashPassword(password);
+
+    user.password = newHashedPassword as string;
+    user.passwordResetCode = '';
+
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.log(error);
+
+    return res
+      .status(500)
+      .json({ message: 'Something went wrong, internal server error' });
   }
 };
