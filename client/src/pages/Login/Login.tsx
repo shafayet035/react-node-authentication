@@ -47,7 +47,7 @@ function Login() {
       setLoading(false);
       navigate('/');
       setUser(data.data);
-      localStorage.setItem('access_token', data.token);
+      localStorage.setItem('access_token', data.data.token);
     } catch (error) {
       const err = error as any;
       if (err?.response?.data?.message) {
