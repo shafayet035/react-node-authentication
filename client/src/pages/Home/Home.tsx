@@ -9,7 +9,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const logoutHandler = async () => {
-    await axios.get('/auth/logout');
+    await axios.post('/auth/logout');
     toast({
       description: 'Logged out successfully',
     });
