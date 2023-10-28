@@ -1,10 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import axios from '@/config/axios';
+import { useUser } from '@/hooks/useUser';
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const { toast } = useToast();
+
+  const { setUser } = useUser();
 
   const navigate = useNavigate();
 
@@ -15,6 +18,7 @@ const Home = () => {
     });
     localStorage.removeItem('access_token');
     navigate('/login');
+    setUser(null);
   };
 
   return (
