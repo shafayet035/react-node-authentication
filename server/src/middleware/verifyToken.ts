@@ -19,6 +19,6 @@ export const verifyToken = (
       next();
     });
   } else {
-    return res.status(401).json({ message: 'Authentication required' });
+    return res.status(401).json({ message: 'Unauthorized user' });
   }
 };

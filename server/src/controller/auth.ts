@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from '../model/user';
-import {
-  hashPassword,
-  validateSpecialCharacter,
-  verifyPassword,
-} from '../utils';
+import { hashPassword, verifyPassword } from '../utils';
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../constants';
 import jwt from 'jsonwebtoken';
 import randomstring from 'randomstring';
@@ -25,7 +21,8 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const isUserExist = await User.findOne({ email }).exec();
-    if (isUserExist) return res.status(409).send('Email is already is in use');
+    if (isUserExist)
+      return res.status(409).send({ message: 'Email is already is in use' });
 
     const hashedPassword = await hashPassword(password);
 
@@ -66,7 +63,15 @@ export const login = async (req: Request, res: Response) => {
     });
     res.cookie('token', token, { httpOnly: true });
 
-    return res.status(200).json({ message: 'User logged in successfully' });
+    return res.status(200).json({
+      message: 'User logged in successfully',
+      data: {
+        name: user.name,
+        email: user.email,
+        id: user._id,
+        token,
+      },
+    });
   } catch (error) {
     console.log(error);
     return res

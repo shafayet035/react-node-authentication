@@ -10,12 +10,17 @@ import path from 'path';
 import { config } from 'dotenv';
 config({ path: path.resolve(__dirname, '../.env') });
 
-import { MONGO_DB_URI, PORT } from './constants';
+import { FRONTEND_URL, MONGO_DB_URI, PORT } from './constants';
 
 export const app = express();
 
 // app middlewares
-app.use(cors());
+app.use(
+  cors({
+    origin: FRONTEND_URL,
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
