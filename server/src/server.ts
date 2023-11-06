@@ -11,6 +11,7 @@ import { config } from 'dotenv';
 config({ path: path.resolve(__dirname, '../.env') });
 
 import { FRONTEND_URL, MONGO_DB_URI, PORT } from './constants';
+import helmet from 'helmet';
 
 export const app = express();
 
@@ -24,6 +25,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
+app.use(helmet());
 
 // Databse Connection
 if (MONGO_DB_URI) {

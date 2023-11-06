@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import ForgotPassword from '../pages/ForgotPassword';
@@ -16,6 +16,7 @@ function App() {
           <>
             <Route path='/' element={<Home />} />
             <Route path='/dashboard' element={<h2> Hello Wolrd </h2>} />
+            <Route path='/*' element={<Navigate to='/' />} />
           </>
         ) : (
           <>

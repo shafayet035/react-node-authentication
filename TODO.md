@@ -3,5 +3,5 @@
 [x] Setup Database
 [x] Registration
 [x] Login
-[ ] Forget Password
-[ ] reset password
+[x] Forget Password
+[x] reset password

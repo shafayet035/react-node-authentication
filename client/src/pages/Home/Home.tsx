@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const Home = () => {
   const { toast } = useToast();
 
-  const { setUser } = useUser();
+  const { setUser, user } = useUser();
 
   const navigate = useNavigate();
 
@@ -23,7 +23,8 @@ const Home = () => {
 
   return (
     <div className='flex flex-col justify-center items-center min-h-screen'>
-      <h3 className='mb-4'> Welcome to the home page!</h3>
+      <h3 className='mb-4'> Welcome {user?.name}</h3>
+      <p className='mb-4'>Your Email is : {user?.email}</p>
       <Button onClick={logoutHandler}>Logout</Button>
     </div>
   );
