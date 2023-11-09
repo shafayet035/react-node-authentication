@@ -102,12 +102,12 @@ function Login() {
                 />
                 {showPassword ? (
                   <Eye
-                    className='h-4 w-4 absolute right-3 top-6 cursor-pointer'
+                    className='h-4 w-4 absolute right-3 top-7 cursor-pointer'
                     onClick={() => setShowPassword(false)}
                   />
                 ) : (
                   <EyeOff
-                    className='h-4 w-4 absolute right-3 top-6 cursor-pointer'
+                    className='h-4 w-4 absolute right-3 top-7 cursor-pointer'
                     onClick={() => setShowPassword(true)}
                   />
                 )}
