@@ -14,12 +14,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LoginSchemaType, loginSchema } from './validation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import axios from '@/config/axios';
 import { useUser } from '@/hooks/useUser';
 
 function Login() {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { setUser } = useUser();
@@ -91,14 +92,26 @@ function Login() {
                   </span>
                 )}
               </div>
-              <div className='flex flex-col space-y-1.5 mb-1'>
+              <div className='flex flex-col space-y-1.5 mb-1 relative'>
                 <Label htmlFor='password'>Password</Label>
                 <Input
                   id='password'
-                  type='password'
+                  type={showPassword ? 'text' : 'password'}
                   placeholder='Your password'
                   {...register('password')}
                 />
+                {showPassword ? (
+                  <Eye
+                    className='h-4 w-4 absolute right-3 top-6 cursor-pointer'
+                    onClick={() => setShowPassword(false)}
+                  />
+                ) : (
+                  <EyeOff
+                    className='h-4 w-4 absolute right-3 top-6 cursor-pointer'
+                    onClick={() => setShowPassword(true)}
+                  />
+                )}
+
                 {errors.password?.message && (
                   <span className='text-red-500 text-sm'>
                     {errors.password?.message}

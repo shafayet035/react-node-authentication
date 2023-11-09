@@ -5,28 +5,41 @@ import ForgotPassword from '../pages/ForgotPassword';
 import Home from '../pages/Home';
 import { useUser } from '@/hooks/useUser';
 import { Toaster } from '@/components/ui/toaster';
+import Navbar from '@/components/Navbar';
+import Create from '@/pages/Create';
 
 function App() {
   const { user } = useUser();
 
   return (
     <>
-      <Routes>
-        {user ? (
-          <>
-            <Route path='/' element={<Home />} />
-            <Route path='/dashboard' element={<h2> Hello Wolrd </h2>} />
-            <Route path='/*' element={<Navigate to='/' />} />
-          </>
-        ) : (
-          <>
+      {user ? (
+        <Authenticated />
+      ) : (
+        <>
+          <Routes>
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/forgot-password' element={<ForgotPassword />} />
-          </>
-        )}
-      </Routes>
+          </Routes>
+        </>
+      )}
       <Toaster />
+    </>
+  );
+}
+
+function Authenticated() {
+  return (
+    <>
+      <Navbar />
+
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/dashboard' element={<h2> Hello Wolrd </h2>} />
+        <Route path='/create' element={<Create />} />
+        <Route path='/*' element={<Navigate to='/' />} />
+      </Routes>
     </>
   );
 }
