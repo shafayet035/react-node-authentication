@@ -117,7 +117,7 @@ function ForgotPassword() {
           </div>
         </CardContent>
         <CardFooter className='flex justify-center'>
-          <Link to='/register'>
+          <Link to='/login'>
             <Button variant='link'>Go back to login</Button>
           </Link>
         </CardFooter>
